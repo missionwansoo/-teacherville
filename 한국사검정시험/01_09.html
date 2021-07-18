@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>최태성의 한 눈에 사로잡는 한국사능력검정시험</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<style type="text/css">
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+	<link href="./css/common.css" rel="stylesheet" />
+	<script src="./js/jquery-3.1.1.min.js"></script>
+	<script src="./js/common.js"></script>
+	<script src="./js/data_load.js"></script>
+	<script src="./js/jquery-migrate-1.4.1.min.js"></script>
+	<!--<script type="text/javascript" src="http://www.teacherville.co.kr/common/script/crossdomain2.js"></script>
+	<script type="text/javascript" src="http://www.teacherville.co.kr/common/script/jquery-1.12.3.min.js"></script>
+	<script type="text/javascript" src="http://www.teacherville.co.kr/common/script/teachervilleLMS.js"></script>-->
+	<script>
+		// ------------ 퀴즈 간지 추가
+
+
+		var $media;
+
+		function start_interval() {
+			if (media.currentTime < media.duration - 1) {
+				change_reTest = 2;
+				quiz_reset();
+				Init();
+				$('#mainMedia').show();
+			}
+			if (media.currentTime >= 5 && $media.css('display') != 'none') {
+				$('#quiz_start').fadeIn(100);
+			} else {
+				$('#quiz_start').hide();
+			}
+		}
+		// ------------ 퀴즈 간지 추가 끝
+		$(window).load(function () {
+			$(".quizQ_ansText").val("");
+			$media = $('#mainMedia');
+			$next1 = $('.quiz_wrap.q1 .btnNext');
+			$next2 = $('.quiz_wrap.q2 .btnNext');
+			$next3 = $('.quiz_wrap.q3 .btnNext2');
+			$retest = $('#retest');
+			// ------------ 퀴즈 간지 추가
+
+			$(document).on("click", "#play", function () {
+				start_interval = setTimeout(start_interval, 6000);
+			});
+
+			$('#quiz_start').click(function () {
+				media.currentTime = media.duration;
+				audio_func.start_now();
+				$('#quiz_start').hide();
+				$('#mainMedia').hide();
+			});
+			// ------------ 퀴즈 간지 추가 끝
+
+			$('#review').on('click', function () {
+				$(".quizQ_ansText").val("");
+				/*
+				$next1.addClass('result').unbind('click');
+				$next1.on('click', function () {
+					page04();
+				});
+				$next2.addClass('result').unbind('click');
+				$next2.on('click', function () {
+					page04();
+				});
+				$('.review').removeClass('on');
+				$('#review1').addClass('on');
+				$('.display_review').addClass('review_mode');
+				$('#pageAns').hide();
+				$('.review_wrap').css('visibility', 'visible');
+				$('.quiz_wrap.q1').show();
+				for (var i = 1; i <= $('.review').length; i++) {
+					$('#review' + i).click(function () {
+						var num = $(this).attr('id').replace('review', '');
+						$('.quiz_wrap').hide();
+						$('.quiz_wrap.q' + num).show();
+						$('.review').removeClass('on');
+						$('#review' + num).addClass('on');
+					});
+				}
+				*/
+				change_reTest = 2;
+				quiz_reset();
+				Init();
+			});
+			$('.viewCon').click(function () {
+				call_imagePopup($(this).attr('data-image'));
+			});
+
+		});
+
+
+		var chk_point = 4; // check해야할 갯수
+		var reTest = 2; // 기회
+		//-------------------정답변수
+		var ans_num = [3, 1, 1];
+		var select_ans = [false, false, false];
+		var rewrong = [];
+		//-------------------정답변수
+
+		var change_reTest = reTest;
+
+
+		var wrongInit = function () {
+			for (var i = 0; i < rewrong.length; i++) {
+				eval("$next" + rewrong[i] + ".unbind('click');");
+				if (i === rewrong.length - 1) {
+					eval("$next" + rewrong[i] + ".addClass('result').on('click', function(){page04();});");
+				} else {
+					eval("$next" + rewrong[i] + ".on('click', function(){page0" + rewrong[i + 1] + "();});");
+				}
+			}
+			$('.review_wrap').css('visibility', 'visible');
+			eval("page0" + rewrong[0] + "();");
+			rewrong = [];
+		}
+
+		var Init = function () {
+			$next1.unbind('click');
+			$next2.unbind('click');
+			$next3.unbind('click');
+
+			$next1.on('click', function () {
+				page02();
+				audio_func.click();
+			});
+			$next2.on('click', function () {
+				page03();
+				audio_func.click();
+			});
+			$next3.on('click', function () {
+				page04();
+				audio_func.click();
+			});
+			$('.review_wrap').css('visibility', 'visible');
+			for (var i = 0; i < $('.quiz_wrap').length; i++) { // 정답 박스 번호 표시
+				var $quiz_target = $('.quiz_wrap').eq(i);
+				$quiz_target.find('.answer').html(ans_num[i]);
+			}
+			$('.select').unbind('click');
+			rewrong = [];
+			page01();
+		}
+
+
+		/*********** 1번 ***********/
+		var page01 = function () {
+			page_visible(1);
+			var correctNum = ans_num[0];
+			var isComp = false;
+			chk_point = 4;
+			change_reTest = 2;
+
+			for (var i = 1; i <= chk_point; i++) {
+				var _this = ".quiz_wrap.q1 .quiz" + i;
+
+				$(_this).click(function () {
+					console.log("a");
+					if ($(this).hasClass('quiz1')) {
+						select_ans[1] = ansChk(1, 1);
+					} else if ($(this).hasClass('quiz2')) {
+						select_ans[1] = ansChk(1, 2);
+					} else if ($(this).hasClass('quiz3')) {
+						select_ans[1] = ansChk(1, 3);
+					} else if ($(this).hasClass('quiz4')) {
+						select_ans[1] = ansChk(1, 4);
+					}
+				});
+			}
+		}
+
+		/*********** 2번 ***********/
+		var page02 = function () {
+			page_visible(2);
+			var correctNum = ans_num[1];
+			var isComp = false;
+			chk_point = 1;
+
+		}
+
+		function o_actionChk() {
+			if (change_reTest >= 0) {
+				select_ans[0] = ox_ansChk(2, 1);
+			}
+		}
+
+		function x_actionChk() {
+			if (change_reTest >= 0) {
+				select_ans[0] = ox_ansChk(2, 2);
+			}
+		}
+
+
+		function ox_ansChk(qNum, clickNum) {
+			var correct = false;
+			change_reTest -= 1;
+
+			if (change_reTest >= 0) {
+				if (ans_num[qNum - 2] == clickNum) { // 정답
+					change_reTest = -1;
+					audio_func.commentary();
+					$('#se_quiz_correct')[0].play();
+					call_alert('correct');
+					ans_ani(qNum, clickNum);
+					offClick(qNum);
+					change_reTest = reTest;
+
+					$('.q' + qNum + ' .display_correct').css('background', "url(./images/correct_O.png)");
+					$('.q' + qNum + ' .display_correct').css("visibility", "visible");
+					$('#review' + qNum + ' .re_correct').css('background', 'url(./images/review_o.png)');
+
+					audio_func.answer();
+					return true;
+				} else {
+					audio_func.wrong_answer();
+					if (change_reTest == 0) { // 2번 모두 틀림
+						change_reTest = -1;
+						audio_func.commentary();
+						$('#se_quiz_wrong')[0].play();
+						call_alert('wrong');
+						ans_ani(qNum, clickNum);
+						offClick(qNum);
+						//change_reTest = reTest;
+
+						$('.q' + qNum + ' .display_correct').css('background', "url(./images/correct_X.png)");
+						$('.q' + qNum + ' .display_correct').css("visibility", "visible");
+						$('#review' + qNum + ' .re_correct').css('background', 'url(./images/review_x.png)');
+						rewrong.push(qNum);
+						return false;
+					} else { // 1번틀림
+						$('#se_quiz_wrong')[0].play();
+						call_alert('re');
+					}
+				}
+			}
+		}
+
+		/*********** 3번 ***********/
+
+		var page03 = function () {
+			page_visible(3);
+			var correctNum = ans_num[2];
+			var isComp = false;
+			chk_point = 1;
+			change_reTest = 2;
+
+			//	for (var i = 1; i <= chk_point; i++) {
+
+			//	var _this = ".quizQ_ansSubmit";
+			/*
+			$(".quizQ_ansSubmit").click(function (e) {
+				e.stopPropagation();
+				if ($(this).hasClass('quizQ_ansSubmit')) {
+					short_ansChk();
+					//select_ans[0] = ansChk(1, 1);
+				}
+			});
+			*/
+			//}
+		}
+
+		function short_ansChk() {
+			//page_visible(1);
+			var correctNum = ans_num[2];
+			var isComp = false;
+			chk_point = 1;
+
+			var correct = false;
+
+			var str = "";
+			var ans = $(".quizQ_ansText").val();
+			var qNum = 3;
+			var clickNum = 0;
+			if (ans == null || ans == "") {
+				str = "wrong";
+			} else {
+				if (ans == "신라") {
+					str = "correct";
+				} else {
+					str = "re";
+				}
+			}
+
+			$('#container').append('<div id="alert_wrap"></div>');
+
+
+			if (change_reTest >= 0) {
+				if (str === "correct") { //정답 ){ // 정답
+
+					clickNum = 2;
+					select_ans[0] = true;
+					audio_func.commentary();
+					$('#se_quiz_correct')[0].play();
+					//	call_alert('correct');
+					ans_ani(qNum, clickNum);
+					offClick(qNum);
+					change_reTest = 0;
+
+					$('.q' + qNum + ' .display_correct').css('background', "url(./images/correct_O.png)");
+					$('.q' + qNum + ' .display_correct').css("visibility", "visible");
+					$('#review' + qNum + ' .re_correct').css('background', 'url(./images/review_o.png)');
+
+					audio_func.answer();
+					//return true;
+				} else if (str === "wrong") { //미입력
+					change_reTest = 2;
+					//$('#alert_wrap').append('<div id="alert_wrong" class="alert_content"></div>');
+					call_alert('wrong');
+
+				} else if (str === "re") { //오답
+
+					clickNum = 1;
+					select_ans[0] = false;
+					audio_func.wrong_answer();
+
+					change_reTest--;
+
+					if (change_reTest == 0) { // 2번 모두 틀림
+
+						audio_func.commentary();
+						$('#se_quiz_wrong')[0].play();
+						//call_alert('wrong');
+						ans_ani(qNum, clickNum);
+						offClick(qNum);
+
+						$('.q' + qNum + ' .display_correct').css('background', "url(./images/correct_X.png)");
+						$('.q' + qNum + ' .display_correct').css("visibility", "visible");
+						$('#review' + qNum + ' .re_correct').css('background', 'url(./images/review_x.png)');
+						rewrong.push(qNum);
+
+
+						//return false;
+					} else { // 1번틀림
+
+						$('#se_quiz_wrong')[0].play();
+						call_alert('re');
+					}
+				}
+			}
+		}
+
+
+		/*********** 정답화면 ***********/
+		var page04 = function () {
+			$('#next_bubble').fadeIn();
+			var audio = new Audio('./Sound/Next_massage.mp3');
+			audio.play();
+			$('.review_wrap').css('visibility', 'hidden');
+			$('#display_correct').css("visibility", "hidden");
+			$('#pageAns').show();
+
+			var correctNumber = 0;
+
+			$('.quiz_wrap').hide();
+
+			for (var i = 1; i <= 3; i++) {
+				var q_ox = "#pageAns #q" + i;
+				if (select_ans[i - 1]) {
+					correctNumber++;
+					$(q_ox).attr('src', "./images/answer_O.png");
+				} else {
+					$(q_ox).attr('src', "./images/answer_X.png");
+				}
+			}
+
+			$('#pageAns #correct_num').html(correctNumber);
+			if (correctNumber < 2) {
+				$retest.unbind('click');
+				$retest.on('click', function () {
+					$(".quizQ_ansText").val("");
+					quiz_reset(rewrong);
+					wrongInit();
+				});
+				$retest.addClass('rewrong');
+			} else {
+				$retest.unbind('click');
+				$retest.on('click', function () {
+					$(".quizQ_ansText").val("");
+					quiz_reset();
+					Init();
+					audio_func.click();
+				});
+				$retest.removeClass('rewrong');
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<div id="content_wrap">
+		<div id="container">
+			<section class="qContents">
+				<div class="quiz_wrap q1">
+					<div class="pageQ_text">
+						<img src="./images/quiz1.png" />
+						<div class="display_correct"></div>
+						<p>
+							<b>우리나라</b> 최초의 국가인 고조선이 성립된 시기는 어느시대인가?
+						</p>
+					</div>
+					<div class="page">
+						<div class="select quiz1">
+							<div class="ball"><img class="answer_highlight" src="./images/answer_check2.png" /><img class="check">1
+							</div>
+							<p>
+								구석기
+							</p>
+						</div>
+						<div class="select quiz2">
+							<div class="ball"><img class="answer_highlight" src="./images/answer_check2.png" /><img class="check">2
+							</div>
+							<p>
+								신석기
+							</p>
+						</div>
+						<div class="select quiz3">
+							<div class="ball"><img class="answer_highlight" src="./images/answer_check2.png" /><img class="check">3
+							</div>
+							<p>
+								청동기
+							</p>
+						</div>
+						<div class="select quiz4">
+							<div class="ball"><img class="answer_highlight" src="./images/answer_check2.png" /><img class="check">4
+							</div>
+							<p>
+								철기
+							</p>
+						</div>
+					</div>
+					<div class="answer_area">
+						<div class="btnNext"></div>
+						<div class="answer-area">
+							<div class="answer"></div>
+						</div> <!-- 정답표시 안건드려도 됨 -->
+						<div class="explain-area">
+							<div class="explain">
+								구석기, 신석기 시대는 평등사회로써 국가의 성립이 되지 않았으며 우리나라 최초의 국가인 고조선의 성립은 청동기 시대에 나타나게 됩니다.
+							</div>
+						</div> <!-- 정답 해설 -->
+					</div>
+				</div>
+
+				<div class="quiz_wrap q2">
+					<div class="pageQ_text">
+						<img src="./images/quiz2.png" />
+						<div class="display_correct"></div>
+						<p>
+							다음 중 낱말을 활용한 수업 방법의 효과로 옳지 <strong>않은</strong> 것은?
+						</p>
+					</div>
+					<div class="page">
+						<div class="select_o quiz1" onClick="o_actionChk();">
+						</div>
+						<div class="select_x quiz2" onClick="x_actionChk();">
+						</div>
+					</div>
+					<div class="answer_area">
+						<div class="btnNext"></div>
+						<div class="answer-area">
+							<div class="answerOX">X</div>
+						</div> <!-- 정답표시 안건드려도 됨 -->
+						<div class="explain-area">
+							<div class="explain">
+								독서치료를 할 때 관계를 맺기 위해서 고백과 용서가 필요합니다. 이를 통해 자신을 알아가고, 마음치유에 도달할 수 있습니다.
+							</div>
+						</div> <!-- 정답 해설 -->
+					</div>
+				</div>
+
+				<div class="quiz_wrap q3">
+					<div class="pageQ_text">
+						<img src="./images/quiz3.png" />
+						<div class="display_correct" id="q1_correct"></div>
+						<p>
+							다음 빈 칸에 알맞은 말을 입력하세요.
+						</p>
+					</div>
+					<div class="page">
+						<div class="quizQ">
+							<p>아이들이 잘못된 행동을 하는 원인은 주로 아이의 <img src="./images/quizQ_blank.png"> 속에 있는 경우가 많다.</p>
+						</div>
+						<div class="quizQ_answer">
+							<input type="text" value="" class="quizQ_ansText" />
+							<input type="button" value="" class="quizQ_ansSubmit" onClick="short_ansChk();" />
+						</div>
+					</div>
+					<div class="answer_area">
+						<div class="btnNext2 result"></div>
+						<div class="answer-area">
+							<div class="answerShort">마음</div>
+						</div> <!-- 정답표시 안건드려도 됨 -->
+						<div class="explain-area">
+							<div class="explain">
+								아이들의 잘못된 행동은 주로 아이의 마음 속에 있는 경우가 많기 때문에 대화와 소통을 통해 마음 속의 문제를 해결해주어야 합니다.
+							</div>
+						</div> <!-- 정답 해설 -->
+					</div>
+				</div>
+
+
+				<div id="pageAns">
+					<div id="background">
+						<div id="correct">총 3문제 중 <span id="correct_num"></span><span class="correct_blue">문제</span>를 맞히셨습니다.</div>
+						<div class="correct_img">
+							<p><img src="./images/answer_correct.png" /></p>
+						</div>
+						<div class="ans_quiz_img">
+							<p><img src="./images/quiz1.png" /></p>
+							<p><img src="./images/quiz2.png" /></p>
+							<p><img src="./images/quiz3.png" /></p>
+						</div>
+						<img id="q1" />
+						<img id="q2" />
+						<img id="q3" />
+						<div id="retest"></div>
+						<div id="review"></div>
+					</div>
+				</div>
+
+				<div id="quiz_ganzi">
+					<video id="mainMedia" preload="auto"></video>
+					<div id="quiz_start"></div>
+				</div>
+
+				<audio id="se_quiz_correct" preload="auto"></audio>
+				<audio id="se_quiz_wrong" preload="auto"></audio>
+
+			</section>
+
+			<nav class="navigation"></nav>
+			<div id="script-view">
+				<div id="script-text"></div>
+			</div>
+			<div id="menu"></div>
+		</div>
+	</div>
+</body>
+
+</html>
